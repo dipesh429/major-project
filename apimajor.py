@@ -7,6 +7,7 @@ Created on Sat Jul 27 22:01:26 2019
 """
 
 from flask import Flask,jsonify,request
+from keras import backend as K
 from flask_cors import CORS
 import cv2
 import numpy 
@@ -24,17 +25,20 @@ def get():
 @app.route('/image',methods=['POST'])
 def receive_image():
 #    return "receiving image"
+    K.clear_session()
     name = request.form['name']
     email = request.form['email']
     filestr = request.files['file_cv'].read()
-    npimg = numpy.fromstring(filestr, numpy.uint8)
+#    npimg = numpy.fromstring(filestr, numpy.uint8)
+    npimg = numpy.frombuffer(filestr, numpy.uint8)
+
     img = cv2.imdecode(npimg,cv2.IMREAD_COLOR)
    
     img = rescale(img, 1./255, anti_aliasing=False)
     img = cv2.resize(img, (224,224))
     img = numpy.expand_dims(img, axis = 0)
     
-    mod=load_model('model.hd5')
+    mod=load_model('best_model.h5')
     predicted = mod.predict(img)
     print(predicted)
     y_pred = predicted[0][0] > 0.5

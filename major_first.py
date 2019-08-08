@@ -24,6 +24,7 @@ from keras.optimizers import Adam
 #import tensorflow as tf
 #sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
 
+#image_size = tuple((224,224))
 image_size = tuple((224,224))
 
 def plot_model_history(history):
@@ -41,7 +42,7 @@ def plot_model_history(history):
     """
     print(history.history.keys())
     plt.margins(x=0)
-    # summarize history for accuracy
+    # summarize history for accuracy￼
     plt.plot(history.history['acc'])
     plt.plot(history.history['val_acc'])
     plt.title('model accuracy')
@@ -60,7 +61,7 @@ def plot_model_history(history):
     
 #def buildNet(num_classes):
     """
-    Function to build 4 layer NN with 2 Conv layers, 1 MaxPool layer,
+    Function to build 4 layer NN with 2 Conv layers, 1 MaxPool layer,￼
     
     1 GlobalMaxPool layer and 2 Dense layers
     Parameters
@@ -105,6 +106,7 @@ def buildNet():
 
     model = Model(in_layer, preds)
     model.compile(loss="categorical_crossentropy", optimizer=Adam(lr=INIT_LR, decay=INIT_LR / EPOCHS),metrics=["accuracy"])
+    return model
    
     
     
@@ -151,10 +153,15 @@ def buildNet():
 #                               metrics = ['categorical_accuracy', top_2_accuracy])
 #    retina_model.summary()
     
-    return model
+    
 
 
 def trainNet(training_set, validation_set):
+    print('training_set')
+    print(len(training_set))
+    
+    print('validation_set')
+    print(len(validation_set))
     """
     Function to train Neural Network Created, save it as hd5 and plot the various parameters.
     
@@ -177,12 +184,12 @@ def trainNet(training_set, validation_set):
              ModelCheckpoint(filepath='best_model.h5', monitor='val_loss', save_best_only=True),history]
     
     history = model.fit_generator(training_set,
-                                steps_per_epoch = len(training_set)*2,
-                                epochs = 20,
+                                steps_per_epoch = len(training_set)*1.5,
+                                epochs = 50,
                                 validation_data = validation_set,
                                 validation_steps = len(validation_set),
-#                                use_multiprocessing = True,
-#                                workers = 8,
+                                use_multiprocessing = True,
+                                workers = 8,
                                 callbacks=callbacks,
                                 )
     model.save('model.hd5')
@@ -214,7 +221,7 @@ test_datagen = ImageDataGenerator (rescale = 1./255)
 training_set = train_datagen.flow_from_directory('dataset/train/',
                                                  target_size = image_size,
                                                  batch_size = 32)
-print(len(training_set))
+
 
 validation_set = test_datagen.flow_from_directory('dataset/test/',
                                                   target_size = image_size,
